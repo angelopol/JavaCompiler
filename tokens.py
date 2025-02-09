@@ -33,6 +33,7 @@ def get_reserved():
         'SHORT',
         'STATIC',
         'STRICTFP',
+        'STRING',
         'SUPER',
         'SYNCHRONIZED',
         'THIS',
@@ -137,7 +138,7 @@ def get_token_functions():
         'ABSTRACT', 'ASSERT', 'BOOLEAN', 'BREAK', 'BYTE', 'CASE', 'CATCH', 'CHAR', 'CLASS', 'CONST', 'CONTINUE', 
         'DEFAULT', 'DO', 'DOUBLE', 'ELSE', 'ENUM', 'EXTENDS', 'FINAL', 'FINALLY', 'FLOAT', 'FOR', 'ENTERO',
         'CADENA', 'GOTO', 'IF', 'IMPLEMENTS', 'IMPORT', 'INSTANCEOF', 'INT', 'INTERFACE', 'LONG', 'NATIVE', 'NEW', 'PACKAGE', 'PRIVATE', 
-        'PROTECTED', 'PUBLIC', 'RETURN', 'SHORT', 'STATIC', 'STRICTFP', 'SUPER', 'SWITCH', 'SYNCHRONIZED', 'THIS', 
+        'PROTECTED', 'PUBLIC', 'RETURN', 'SHORT', 'STATIC', 'STRICTFP', 'STRING','SUPER', 'SWITCH', 'SYNCHRONIZED', 'THIS', 
         'THROW', 'THROWS', 'TRANSIENT', 'TRY', 'VOID', 'VOLATILE', 'WHILE', 'newline', 'IDENTIFICADOR', 'comments', 'comments_ONELine', 
         'error'
     ]
@@ -306,6 +307,10 @@ def t_STATIC(t):
 
 def t_STRICTFP(t):
     r'strictfp'
+    return t
+
+def t_STRING(t):
+    r'String'
     return t
 
 def t_SUPER(t):

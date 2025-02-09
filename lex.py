@@ -1,38 +1,30 @@
 import ply.lex as lex
+from tokens import get_all, get_token_patterns, get_token_functions
+import tokens as tok
 
-#Definición de tokens
-tokens = ['NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE']
+tokens = get_all()
 
-#Expresiones regulares para tokens simples
-t_PLUS = r'\+'
-t_MINUS = r'\-'
-t_TIMES = r'\*'
-t_DIVIDE = r'\/'
+for token in get_token_patterns():
+    globals()[f't_{token[0]}'] = token[1]
 
-#Expresión regular para reconocer números enteros
-def t_NUMBER(t):
-    r'\d+'
-    t.value = int(t.value)
-    return t
+for func in get_token_functions():
+    globals()[f't_{func}'] = getattr(tok, f't_{func}')
 
-#Ignorar caracteres como espacios y saltos de línea
-t_ignore = ' \n'
+def execute(data):
+    result = []
+    lexer = lex.lex()
+    lexer.input(data)
 
-#Manejo de errores de token
-def t_error(t):
-    print("Carácter no válido: '%s'" % t.value[0])
-    t.lexer.skip(1)
+    while True:
+        token = lexer.token()
+        if not token:
+            break
 
-#Construcción del analizador léxico
-lexer = lex.lex()
+        state = "Line: {:4} Type: {:16} Value: {:16} Position: {:4}".format(str(token.lineno), str(token.type), str(token.value), str(token.lexpos))
+        result.append(state)
+    return result
 
-#Ejemplo de uso
-data = "3 + 4 * 2"
-lexer.input(data)
-
-#Obtener los tokens reconocidos
-while True:
-    token = lexer.token()
-    if not token:
-        break
-    print(token)
+if __name__ == '__main__':
+    while True:
+        data = input("Enter anything: ")
+        print(execute(data))

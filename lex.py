@@ -4,7 +4,7 @@ import tokens as tok
 
 tokens = get_all()
 
-for token in get_token_patterns():
+for token in get_token_patterns(): 
     globals()[f't_{token[0]}'] = token[1]
 
 for func in get_token_functions():

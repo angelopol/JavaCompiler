@@ -20,11 +20,7 @@ def execute(data):
         if not token:
             break
 
-        state = "Line: {:4} Type: {:16} Value: {:16} Position: {:4}".format(str(token.lineno), str(token.type), str(token.value), str(token.lexpos))
+        state = f"{token.lineno:<8} {token.type:<40} {token.value:<15} {token.lexpos:<10}\n"
         result.append(state)
     return result
 
-if __name__ == '__main__':
-    while True:
-        data = input("Enter anything: ")
-        print(execute(data))

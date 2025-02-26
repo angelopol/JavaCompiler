@@ -19,8 +19,11 @@ def execute(data):
         token = lexer.token()
         if not token:
             break
-
-        state = f"{token.lineno:<8} {token.type:<40} {token.value:<15} {token.lexpos:<10}\n"
+        state = {
+            'lineno': token.lineno,
+            'type': token.type,
+            'value': token.value,
+            'lexpos': token.lexpos
+        }
         result.append(state)
     return result
-

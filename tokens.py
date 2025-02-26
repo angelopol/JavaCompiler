@@ -77,6 +77,7 @@ def get_logic():
         'AND',        # &&
         'OR',         # ||
         'NOT',        # !
+        'EQUALS',     # ==
     )
 
 def get_others():
@@ -119,6 +120,7 @@ def get_token_patterns():
         ['AND', r'&&'],
         ['OR', r'\|\|'],
         ['NOT', r'!'],
+        ['EQUALS', r'=='],
         ['LESS_THAN', r'<'],
         ['GREATER_THAN', r'>'],
         ['SEMICOLON', r';'],
@@ -374,8 +376,6 @@ def t_comments_ONELine(t):
     r'\/\/(.)*\n'
     t.lexer.lineno += 1
     print("One line comment")
-
-
 
 def t_error(t):
     print("Not valid token, Line: {:4} Value: {:16} Position: {:4}".format(str(t.lineno), str(t.value), str(t.lexpos)))

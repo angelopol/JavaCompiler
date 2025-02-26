@@ -5,39 +5,39 @@ import lex
 
 def main(page: Page):
     page.title = "Compilador de Java-Python"
-    page.window_width = 600
-    page.window_height = 670
-    page.window_resizable = False
+    page.window_resizable = True
     page.window_center()
-    page.padding = 0
+    page.padding = 10
 
+    textArea1 = ft.TextField(label="Codigo Java", multiline=True)
+    resultTable = ft.DataTable(
+        columns=[
+            ft.DataColumn(label=Text("Line")),
+            ft.DataColumn(label=Text("Type")),
+            ft.DataColumn(label=Text("Value")),
+            ft.DataColumn(label=Text("Position")),
+        ],
+        rows=[],
+        expand=True
+    )
+    executeButton = ft.ElevatedButton(text="Analizar", disabled=True)
 
-    item1 = []
-    item2 = []
-    item3 = []
-
-    textArea1 = ft.TextField(label="Codigo Java", multiline=True,width=500)
-    executeButton = ft.ElevatedButton(text="Analizar",disabled=True)
-    textArea2 = ft.TextField(label="Resultado", value="Line    Type                Value           Position\n",multiline=True,read_only=True,width=500)
-    item1.append(textArea1)
-    item2.append(executeButton)
-    item3.append(textArea2)
-    row1 = ft.Row(spacing=10, controls=item1)
-    row2 = ft.Row(spacing=10, controls=item2)
-    row3 = ft.Row(spacing=10, controls=item3)
-
-    def validate(e: ft.ControlEvent)->None:
-        if textArea1.value == "":
-            executeButton.disabled = True
-        else:
-            executeButton.disabled = False
+    def validate(e: ft.ControlEvent) -> None:
+        executeButton.disabled = textArea1.value == ""
         page.update()
 
-    def executeLex(e: ft.ControlEvent)->None:
-        cadena = ""
-        for i in range(len(lex.execute(textArea1.value))):
-            cadena += lex.execute(textArea1.value)[i]
-        textArea2.value += cadena
+    def executeLex(e: ft.ControlEvent) -> None:
+        result = lex.execute(textArea1.value)
+        resultTable.rows.clear()
+        for token in result:
+            resultTable.rows.append(
+                ft.DataRow(cells=[
+                    ft.DataCell(Text(str(token["lineno"]))),
+                    ft.DataCell(Text(token["type"])),
+                    ft.DataCell(Text(token["value"])),
+                    ft.DataCell(Text(str(token["lexpos"]))),
+                ])
+            )
         page.update()
 
     textArea1.on_change = validate
@@ -45,13 +45,13 @@ def main(page: Page):
 
     def route_change(e: RouteChangeEvent) -> None:
         page.views.clear()
-        #Menu
+        # Menu
         page.views.append(
             View(
                 route='/',
                 controls=[
-                    AppBar(title=Text('Menú'),bgcolor = 'blue'), #Barra superior
-                    Text(value = 'Compilador\nSamuel Molina y Angelo Polgrossi',size = 30,text_align="CENTER"), #Funciona como una etiqueta
+                    AppBar(title=Text('Menú'), bgcolor='blue'),
+                    Text(value='Compilador\nSamuel Molina y Angelo Polgrossi', size=30, text_align="CENTER"),
                     ElevatedButton(text='  Analizador Lexico  ', on_click=lambda _: page.go('/lex'))
                 ],
                 vertical_alignment=MainAxisAlignment.CENTER,
@@ -60,23 +60,27 @@ def main(page: Page):
             )
         )
 
-        #Pagina Gauss Seidel
+        # Pagina Analizador Lexico
         if page.route == '/lex':
             page.views.append(
                 View(
                     route='/lex',
                     controls=[
-                        AppBar(title=Text('Analizador Lexico'),bgcolor = 'blue'),
-                        Text(value = 'Analizador Lexico',size = 30),
-                        row1,
-                        row2,
-                        row3
-                        #ElevatedButton(text='Regresar a menu', on_click=lambda _: page.go('/'))#Boton que va en el borde superior
+                        AppBar(title=Text('Analizador Lexico'), bgcolor='blue'),
+                        Text(value='Analizador Lexico', size=30),
+                        ft.Column(
+                            controls=[
+                                textArea1,
+                                executeButton,
+                                ft.ResponsiveRow([resultTable])
+                            ],
+                            expand=True,
+                            spacing=10
+                        )
                     ],
-                    vertical_alignment=MainAxisAlignment.START,
+                    vertical_alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                     spacing=20,
-                    
                 )
             )
         page.update()
@@ -85,7 +89,6 @@ def main(page: Page):
         page.views.pop()
         top_view: View = page.views[-1]
         page.go(top_view.route)
-    #page.add(contenedor)
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop

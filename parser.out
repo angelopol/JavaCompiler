@@ -1,0 +1,187 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    ABSTRACT
+    AND
+    ASSERT
+    BREAK
+    BYTE
+    CADENA
+    CASE
+    CATCH
+    CLASS
+    COMMA
+    CONST
+    CONTINUE
+    DECREMENT
+    DEFAULT
+    DO
+    DOUBLE
+    DOUBLE_QUOTE
+    ENTERO
+    ENUM
+    EXTENDS
+    FINAL
+    FINALLY
+    FOR
+    GOTO
+    GREATER_THAN
+    IDENTIFICADOR
+    IMPLEMENTS
+    IMPORT
+    INCREMENT
+    INSTANCEOF
+    INTERFACE
+    LBRACKET
+    LESS_THAN
+    LONG
+    MOD
+    NATIVE
+    NEW
+    NOT
+    OR
+    PACKAGE
+    PRIVATE
+    PROTECTED
+    PUBLIC
+    RBRACKET
+    RETURN
+    SHORT
+    STATIC
+    STRICTFP
+    SUPER
+    SWITCH
+    SYNCHRONIZED
+    THIS
+    THROW
+    THROWS
+    TRANSIENT
+    TRY
+    VOID
+    VOLATILE
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> declarations
+Rule 2     declarations -> declarations declaration
+Rule 3     declarations -> declaration
+Rule 4     declaration -> type IDENTIFIER ASSIGN expression SEMICOLON
+Rule 5     declaration -> IDENTIFIER ASSIGN expression SEMICOLON
+Rule 6     declaration -> IF LPAREN expression RPAREN block
+Rule 7     declaration -> IF LPAREN expression RPAREN block ELSE block
+Rule 8     declaration -> WHILE LPAREN expression RPAREN block
+Rule 9     block -> LBRACE declarations RBRACE
+Rule 10    block -> LBRACE RBRACE
+Rule 11    type -> INT
+Rule 12    type -> FLOAT
+Rule 13    type -> BOOLEAN
+Rule 14    type -> CHAR
+Rule 15    type -> STRING
+Rule 16    expression -> expression PLUS expression
+Rule 17    expression -> expression MINUS expression
+Rule 18    expression -> expression MULT expression
+Rule 19    expression -> expression DIV expression
+Rule 20    expression -> MINUS expression
+Rule 21    expression -> LPAREN expression RPAREN
+Rule 22    expression -> INTEGER
+Rule 23    expression -> FLOAT_LITERAL
+Rule 24    expression -> STRING_LITERAL
+Rule 25    expression -> IDENTIFIER
+Rule 26    expression -> expression EQUALS expression
+
+Terminals, with rules where they appear
+
+ABSTRACT             : 
+AND                  : 
+ASSERT               : 
+ASSIGN               : 4 5
+BOOLEAN              : 13
+BREAK                : 
+BYTE                 : 
+CADENA               : 
+CASE                 : 
+CATCH                : 
+CHAR                 : 14
+CLASS                : 
+COMMA                : 
+CONST                : 
+CONTINUE             : 
+DECREMENT            : 
+DEFAULT              : 
+DIV                  : 19
+DO                   : 
+DOUBLE               : 
+DOUBLE_QUOTE         : 
+ELSE                 : 7
+ENTERO               : 
+ENUM                 : 
+EQUALS               : 26
+EXTENDS              : 
+FINAL                : 
+FINALLY              : 
+FLOAT                : 12
+FLOAT_LITERAL        : 23
+FOR                  : 
+GOTO                 : 
+GREATER_THAN         : 
+IDENTIFICADOR        : 
+IF                   : 6 7
+IMPLEMENTS           : 
+IMPORT               : 
+INCREMENT            : 
+INSTANCEOF           : 
+INT                  : 11
+INTERFACE            : 
+LBRACE               : 9 10
+LBRACKET             : 
+LESS_THAN            : 
+LONG                 : 
+LPAREN               : 6 7 8 21
+MINUS                : 17 20
+MOD                  : 
+MULT                 : 18
+NATIVE               : 
+NEW                  : 
+NOT                  : 
+OR                   : 
+PACKAGE              : 
+PLUS                 : 16
+PRIVATE              : 
+PROTECTED            : 
+PUBLIC               : 
+RBRACE               : 9 10
+RBRACKET             : 
+RETURN               : 
+RPAREN               : 6 7 8 21
+SEMICOLON            : 4 5
+SHORT                : 
+STATIC               : 
+STRICTFP             : 
+STRING               : 15
+SUPER                : 
+SWITCH               : 
+SYNCHRONIZED         : 
+THIS                 : 
+THROW                : 
+THROWS               : 
+TRANSIENT            : 
+TRY                  : 
+VOID                 : 
+VOLATILE             : 
+WHILE                : 8
+error                : 
+
+Nonterminals, with rules where they appear
+
+IDENTIFIER           : 4 5 25
+INTEGER              : 22
+STRING_LITERAL       : 24
+block                : 6 7 7 8
+declaration          : 2 3
+declarations         : 1 2 9
+expression           : 4 5 6 7 8 16 16 17 17 18 18 19 19 20 21 26 26
+program              : 0
+type                 : 4
+

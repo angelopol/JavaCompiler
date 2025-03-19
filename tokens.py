@@ -100,6 +100,7 @@ def get_sintax():
         'DOUBLE_QUOTE', # "
         'IDENTIFICADOR',
         'ENTERO',
+        'FLOAT_LITERAL',
         'CADENA'
 
     )
@@ -138,12 +139,17 @@ def get_token_patterns():
 def get_token_functions():
     return [
         'ABSTRACT', 'ASSERT', 'BOOLEAN', 'BREAK', 'BYTE', 'CASE', 'CATCH', 'CHAR', 'CLASS', 'CONST', 'CONTINUE', 
-        'DEFAULT', 'DO', 'DOUBLE', 'ELSE', 'ENUM', 'EXTENDS', 'FINAL', 'FINALLY', 'FLOAT', 'FOR', 'ENTERO',
+        'DEFAULT', 'DO', 'DOUBLE', 'ELSE', 'ENUM', 'EXTENDS', 'FINAL', 'FINALLY', 'FLOAT', 'FOR', 'ENTERO', 'FLOAT_LITERAL',
         'CADENA', 'GOTO', 'IF', 'IMPLEMENTS', 'IMPORT', 'INSTANCEOF', 'INT', 'INTERFACE', 'LONG', 'NATIVE', 'NEW', 'PACKAGE', 'PRIVATE', 
         'PROTECTED', 'PUBLIC', 'RETURN', 'SHORT', 'STATIC', 'STRICTFP', 'STRING','SUPER', 'SWITCH', 'SYNCHRONIZED', 'THIS', 
         'THROW', 'THROWS', 'TRANSIENT', 'TRY', 'VOID', 'VOLATILE', 'WHILE', 'newline', 'IDENTIFICADOR', 'comments', 'comments_ONELine', 
         'error'
     ]
+
+def t_FLOAT_LITERAL(t):
+    r'\d+\.\d+'
+    t.value = float(t.value)  # Convierte el valor a tipo float
+    return t
 
 def t_ABSTRACT(t):
     r'abstract'
@@ -234,9 +240,9 @@ def t_ENTERO(t):
     t.value = int(t.value)
     return t
 
-
 def t_CADENA(t):
     r'\"([^\\\n]|(\\.))*?\"'
+    t.value = t.value[1:-1]  # Elimina las comillas dobles
     return t
 
 def t_GOTO(t):

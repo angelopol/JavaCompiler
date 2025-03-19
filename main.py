@@ -20,6 +20,14 @@ def main(page: Page):
         rows=[],
         expand=True
     )
+
+    # Usar ListView para habilitar el scroll
+    resultTableContainer = ft.ListView(
+        controls=[resultTable],
+        expand=True,
+        height=300,  # Altura fija para habilitar el scroll
+    )
+
     executeButton = ft.ElevatedButton(text="Analizar", disabled=True)
 
     def validate(e: ft.ControlEvent) -> None:
@@ -72,7 +80,7 @@ def main(page: Page):
                             controls=[
                                 textArea1,
                                 executeButton,
-                                ft.ResponsiveRow([resultTable])
+                                resultTableContainer,  # Usar el ListView con scroll
                             ],
                             expand=True,
                             spacing=10

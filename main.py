@@ -1,15 +1,17 @@
 import flet as ft
-from flet import View, Page, AppBar, ElevatedButton, Text
+from flet import View, Page, AppBar, ElevatedButton, Text, FilePicker, FilePickerResultEvent
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import lex
+import sintax  # Importar el analizador sintáctico
 
 def main(page: Page):
-    page.title = "Compilador de Java-Python"
+    page.title = "Java-Python Compiler"
     page.window_resizable = True
     page.window_center()
     page.padding = 10
 
-    textArea1 = ft.TextField(label="Codigo Java", multiline=True)
+    # Text area for input
+    textArea1 = ft.TextField(label="Java Code", multiline=True)
     resultTable = ft.DataTable(
         columns=[
             ft.DataColumn(label=Text("Line")),
@@ -21,17 +23,23 @@ def main(page: Page):
         expand=True
     )
 
-    # Usar ListView para habilitar el scroll
+    # Scrollable container for the result table
     resultTableContainer = ft.ListView(
         controls=[resultTable],
         expand=True,
-        height=300,  # Altura fija para habilitar el scroll
+        height=300,  # Fixed height to enable scrolling
     )
 
-    executeButton = ft.ElevatedButton(text="Analizar", disabled=True)
+    executeButtonLex = ft.ElevatedButton(text="Analyze Lexically", disabled=True)
+    executeButtonSyntax = ft.ElevatedButton(text="Analyze Syntactically", disabled=True)
+
+    # File picker for loading files
+    filePicker = FilePicker()
+    page.overlay.append(filePicker)
 
     def validate(e: ft.ControlEvent) -> None:
-        executeButton.disabled = textArea1.value == ""
+        executeButtonLex.disabled = textArea1.value == ""
+        executeButtonSyntax.disabled = textArea1.value == ""
         page.update()
 
     def executeLex(e: ft.ControlEvent) -> None:
@@ -48,19 +56,54 @@ def main(page: Page):
             )
         page.update()
 
+    def executeSyntax(e: ft.ControlEvent) -> None:
+        result = sintax.execute_sintax(textArea1.value)
+        resultTable.rows.clear()
+        for line in result:
+            resultTable.rows.append(
+                ft.DataRow(cells=[
+                    ft.DataCell(Text(line)),  # Display the syntax analysis result
+                    ft.DataCell(Text("")),
+                    ft.DataCell(Text("")),
+                    ft.DataCell(Text("")),
+                ])
+            )
+        page.update()
+
+    def loadFile(e: FilePickerResultEvent) -> None:
+        if e.files:
+            file_path = e.files[0].path
+            try:
+                with open(file_path, "r", encoding="utf-8") as file:
+                    textArea1.value = file.read()
+                    validate(None)  # Enable buttons if content is loaded
+                    page.update()
+            except Exception as ex:
+                print(f"Error reading file: {ex}")
+
+    filePicker.on_result = loadFile
+
+    # Button to open file picker
+    loadFileButton = ft.ElevatedButton(
+        text="Load File",
+        on_click=lambda _: filePicker.pick_files(allowed_extensions=["java", "txt"])
+    )
+
     textArea1.on_change = validate
-    executeButton.on_click = executeLex
+    executeButtonLex.on_click = executeLex
+    executeButtonSyntax.on_click = executeSyntax
 
     def route_change(e: RouteChangeEvent) -> None:
         page.views.clear()
-        # Menu
+        # Main menu
         page.views.append(
             View(
                 route='/',
                 controls=[
-                    AppBar(title=Text('Menú'), bgcolor='blue'),
-                    Text(value='Compilador\nSamuel Molina y Angelo Polgrossi', size=30, text_align="CENTER"),
-                    ElevatedButton(text='  Analizador Lexico  ', on_click=lambda _: page.go('/lex'))
+                    AppBar(title=Text('Menu'), bgcolor='blue'),
+                    Text(value='Java-Python Compiler\nSamuel Molina and Angelo Polgrossi', size=30, text_align="CENTER"),
+                    ElevatedButton(text='Lexical Analyzer', on_click=lambda _: page.go('/lex')),
+                    ElevatedButton(text='Syntax Analyzer', on_click=lambda _: page.go('/syntax'))
                 ],
                 vertical_alignment=MainAxisAlignment.CENTER,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
@@ -68,19 +111,45 @@ def main(page: Page):
             )
         )
 
-        # Pagina Analizador Lexico
+        # Lexical Analyzer Page
         if page.route == '/lex':
             page.views.append(
                 View(
                     route='/lex',
                     controls=[
-                        AppBar(title=Text('Analizador Lexico'), bgcolor='blue'),
-                        Text(value='Analizador Lexico', size=30),
+                        AppBar(title=Text('Lexical Analyzer'), bgcolor='blue'),
+                        Text(value='Lexical Analyzer', size=30),
                         ft.Column(
                             controls=[
                                 textArea1,
-                                executeButton,
-                                resultTableContainer,  # Usar el ListView con scroll
+                                loadFileButton,  # Add the load file button
+                                executeButtonLex,
+                                resultTableContainer,  # Use the ListView with scroll
+                            ],
+                            expand=True,
+                            spacing=10
+                        )
+                    ],
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    spacing=20,
+                )
+            )
+
+        # Syntax Analyzer Page
+        if page.route == '/syntax':
+            page.views.append(
+                View(
+                    route='/syntax',
+                    controls=[
+                        AppBar(title=Text('Syntax Analyzer'), bgcolor='blue'),
+                        Text(value='Syntax Analyzer', size=30),
+                        ft.Column(
+                            controls=[
+                                textArea1,
+                                loadFileButton,  # Add the load file button
+                                executeButtonSyntax,
+                                resultTableContainer,  # Use the ListView with scroll
                             ],
                             expand=True,
                             spacing=10

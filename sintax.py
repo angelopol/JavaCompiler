@@ -131,13 +131,22 @@ def p_expresion_comparacion(t):
     '''
     t[0] = t[1] == t[3]
 
+def p_declaracion_incremento(t):
+    'declaracion : IDENTIFICADOR INCREMENT SEMICOLON'
+    if t[1] in nombres:
+        nombres[t[1]] += 1  # Incrementar el valor de la variable en el diccionario
+        t[0] = f"Incremento: {t[1]}++"
+    else:
+        print(f"Error: La variable '{t[1]}' no está definida.")
+        t[0] = f"Error: Incremento fallido para '{t[1]}'"
+
 def p_error(t):
     global resultado_gramatica
     if t:
-        resultado = f"Error sintáctico de tipo {t.type} en el valor {t.value}"
+        resultado = f"Sintax error of type {t.type} in the value {t.value}"
         print(resultado)
     else:
-        resultado = "Error sintáctico en entrada vacía"
+        resultado = "Sintax error in empty input"
         print(resultado)
     resultado_gramatica.append(resultado)
 
@@ -145,19 +154,22 @@ def p_error(t):
 parser = yacc.yacc()
 
 # Función para probar el análisis sintáctico
-def prueba_sintactica(data):
+def execute_sintax(data):
     global resultado_gramatica
     resultado_gramatica.clear()
 
-    for item in data.splitlines():
-        if item:
-            gram = parser.parse(item, lexer=lex.lex())  # Usar el lexer importado desde lex.py
-            if gram:
-                resultado_gramatica.append(str(gram))
-        else:
-            print("Línea vacía")
+    gram = parser.parse(data, lexer=lex.lex())  # Procesar todo el código como un bloque
+    if gram:
+        if isinstance(gram, list):  # Si el resultado es una lista, extiende el resultado
+            resultado_gramatica.extend(gram)
+        else:  # Si no es una lista, simplemente añádelo
+            resultado_gramatica.append(str(gram))
 
-    print("Resultado: ", resultado_gramatica)
+    # Mostrar cada elemento del resultado en una nueva línea
+    print("Result:")
+    for item in resultado_gramatica:
+        print(f" - {item}")
+    
     return resultado_gramatica
 
 if __name__ == '__main__':
@@ -168,4 +180,4 @@ if __name__ == '__main__':
             break
         if not s:
             continue
-        prueba_sintactica(s)
+        execute_sintax(s)

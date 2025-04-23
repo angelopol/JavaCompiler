@@ -3,6 +3,7 @@ from flet import View, Page, AppBar, ElevatedButton, Text, FilePicker, FilePicke
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import lex
 import sintax  # Importar el analizador sintáctico
+from gemini import gemini
 
 def main(page: Page):
     page.title = "Java-Python Compiler"
@@ -32,6 +33,7 @@ def main(page: Page):
 
     executeButtonLex = ft.ElevatedButton(text="Analyze Lexically", disabled=True)
     executeButtonSyntax = ft.ElevatedButton(text="Analyze Syntactically", disabled=True)
+    executeButtonCompile = ft.ElevatedButton(text="Compiler", disabled=True)
 
     # File picker for loading files
     filePicker = FilePicker()
@@ -40,6 +42,7 @@ def main(page: Page):
     def validate(e: ft.ControlEvent) -> None:
         executeButtonLex.disabled = textArea1.value == ""
         executeButtonSyntax.disabled = textArea1.value == ""
+        executeButtonCompile.disabled = textArea1.value == ""
         page.update()
 
     def executeLex(e: ft.ControlEvent) -> None:
@@ -60,6 +63,22 @@ def main(page: Page):
         result = sintax.execute_sintax(textArea1.value)
         resultTable.rows.clear()
         for line in result:
+            resultTable.rows.append(
+                ft.DataRow(cells=[
+                    ft.DataCell(Text(line)),  # Display the syntax analysis result
+                    ft.DataCell(Text("")),
+                    ft.DataCell(Text("")),
+                    ft.DataCell(Text("")),
+                ])
+            )
+        page.update()
+
+    def executeCompile(e: ft.ControlEvent) -> None:
+        result = gemini(textArea1.value)
+        resultTable.rows.clear()
+        for line in result.split("\n"):
+            if (line.strip() == ""):
+                continue
             resultTable.rows.append(
                 ft.DataRow(cells=[
                     ft.DataCell(Text(line)),  # Display the syntax analysis result
@@ -92,6 +111,7 @@ def main(page: Page):
     textArea1.on_change = validate
     executeButtonLex.on_click = executeLex
     executeButtonSyntax.on_click = executeSyntax
+    executeButtonCompile.on_click = executeCompile
 
     def route_change(e: RouteChangeEvent) -> None:
         page.views.clear()
@@ -103,7 +123,8 @@ def main(page: Page):
                     AppBar(title=Text('Menu'), bgcolor='blue'),
                     Text(value='Java-Python Compiler\nSamuel Molina and Angelo Polgrossi', size=30, text_align="CENTER"),
                     ElevatedButton(text='Lexical Analyzer', on_click=lambda _: page.go('/lex')),
-                    ElevatedButton(text='Syntax Analyzer', on_click=lambda _: page.go('/syntax'))
+                    ElevatedButton(text='Syntax Analyzer', on_click=lambda _: page.go('/syntax')),
+                    ElevatedButton(text='Compiler', on_click=lambda _: page.go('/compile'))
                 ],
                 vertical_alignment=MainAxisAlignment.CENTER,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
@@ -149,6 +170,30 @@ def main(page: Page):
                                 textArea1,
                                 loadFileButton,  # Add the load file button
                                 executeButtonSyntax,
+                                resultTableContainer,  # Use the ListView with scroll
+                            ],
+                            expand=True,
+                            spacing=10
+                        )
+                    ],
+                    vertical_alignment=MainAxisAlignment.CENTER,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    spacing=20,
+                )
+            )
+
+        if page.route == '/compile':
+            page.views.append(
+                View(
+                    route='/compile',
+                    controls=[
+                        AppBar(title=Text('Compiler'), bgcolor='blue'),
+                        Text(value='Compiler', size=30),
+                        ft.Column(
+                            controls=[
+                                textArea1,
+                                loadFileButton,  # Add the load file button
+                                executeButtonCompile,
                                 resultTableContainer,  # Use the ListView with scroll
                             ],
                             expand=True,

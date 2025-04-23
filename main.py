@@ -10,6 +10,7 @@ def main(page: Page):
     page.window_resizable = True
     page.window_center()
     page.padding = 10
+    page.scroll=ft.ScrollMode.ALWAYS
 
     # Text area for input
     textArea1 = ft.TextField(label="Java Code", multiline=True)
@@ -33,7 +34,7 @@ def main(page: Page):
 
     executeButtonLex = ft.ElevatedButton(text="Analyze Lexically", disabled=True)
     executeButtonSyntax = ft.ElevatedButton(text="Analyze Syntactically", disabled=True)
-    executeButtonCompile = ft.ElevatedButton(text="Compiler", disabled=True)
+    executeButtonCompile = ft.ElevatedButton(text="Compile", disabled=True)
 
     # File picker for loading files
     filePicker = FilePicker()
@@ -121,17 +122,24 @@ def main(page: Page):
                 route='/',
                 controls=[
                     AppBar(title=Text('Menu'), bgcolor='blue'),
-                    Text(value='Java-Python Compiler\nSamuel Molina and Angelo Polgrossi', size=30, text_align="CENTER"),
-                    ElevatedButton(text='Lexical Analyzer', on_click=lambda _: page.go('/lex')),
-                    ElevatedButton(text='Syntax Analyzer', on_click=lambda _: page.go('/syntax')),
-                    ElevatedButton(text='Compiler', on_click=lambda _: page.go('/compile'))
+                    ft.Column(
+                        controls=[
+                            Text(value='Java-Python Compiler\nSamuel Molina and Angelo Polgrossi', size=30, text_align="CENTER"),
+                            ElevatedButton(text='Lexical Analyzer', on_click=lambda _: page.go('/lex')),
+                            ElevatedButton(text='Syntax Analyzer', on_click=lambda _: page.go('/syntax')),
+                            ElevatedButton(text='Compiler', on_click=lambda _: page.go('/compile')),
+                        ],
+                        expand=True,
+                        spacing=20,
+                        horizontal_alignment=CrossAxisAlignment.CENTER,
+                    )
                 ],
-                vertical_alignment=MainAxisAlignment.CENTER,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
-                spacing=26
+                spacing=26,
+                scroll=ft.ScrollMode.ALWAYS  # Habilitar scroll en el menú principal
             )
         )
-
+    
         # Lexical Analyzer Page
         if page.route == '/lex':
             page.views.append(
@@ -139,24 +147,23 @@ def main(page: Page):
                     route='/lex',
                     controls=[
                         AppBar(title=Text('Lexical Analyzer'), bgcolor='blue'),
-                        Text(value='Lexical Analyzer', size=30),
                         ft.Column(
                             controls=[
+                                Text(value='Lexical Analyzer', size=30),
                                 textArea1,
-                                loadFileButton,  # Add the load file button
+                                loadFileButton,  # Botón para cargar archivos
                                 executeButtonLex,
-                                resultTableContainer,  # Use the ListView with scroll
+                                resultTableContainer,  # Tabla de resultados
                             ],
                             expand=True,
-                            spacing=10
+                            spacing=10,
+                            horizontal_alignment=CrossAxisAlignment.CENTER,
                         )
                     ],
-                    vertical_alignment=MainAxisAlignment.CENTER,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                    spacing=20,
+                    scroll=ft.ScrollMode.ALWAYS  # Habilitar scroll en la página del analizador léxico
                 )
             )
-
+    
         # Syntax Analyzer Page
         if page.route == '/syntax':
             page.views.append(
@@ -164,45 +171,44 @@ def main(page: Page):
                     route='/syntax',
                     controls=[
                         AppBar(title=Text('Syntax Analyzer'), bgcolor='blue'),
-                        Text(value='Syntax Analyzer', size=30),
                         ft.Column(
                             controls=[
+                                Text(value='Syntax Analyzer', size=30),
                                 textArea1,
-                                loadFileButton,  # Add the load file button
+                                loadFileButton,  # Botón para cargar archivos
                                 executeButtonSyntax,
-                                resultTableContainer,  # Use the ListView with scroll
+                                resultTableContainer,  # Tabla de resultados
                             ],
                             expand=True,
-                            spacing=10
+                            spacing=10,
+                            horizontal_alignment=CrossAxisAlignment.CENTER,
                         )
                     ],
-                    vertical_alignment=MainAxisAlignment.CENTER,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                    spacing=20,
+                    scroll=ft.ScrollMode.ALWAYS  # Habilitar scroll en la página del analizador sintáctico
                 )
             )
-
+    
+        # Compiler Page
         if page.route == '/compile':
             page.views.append(
                 View(
                     route='/compile',
                     controls=[
                         AppBar(title=Text('Compiler'), bgcolor='blue'),
-                        Text(value='Compiler', size=30),
                         ft.Column(
                             controls=[
+                                Text(value='Compiler', size=30),
                                 textArea1,
-                                loadFileButton,  # Add the load file button
+                                loadFileButton,  # Botón para cargar archivos
                                 executeButtonCompile,
-                                resultTableContainer,  # Use the ListView with scroll
+                                resultTableContainer,  # Tabla de resultados
                             ],
                             expand=True,
-                            spacing=10
+                            spacing=10,
+                            horizontal_alignment=CrossAxisAlignment.CENTER,
                         )
                     ],
-                    vertical_alignment=MainAxisAlignment.CENTER,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                    spacing=20,
+                    scroll=ft.ScrollMode.ALWAYS  # Habilitar scroll en la página del compilador
                 )
             )
         page.update()

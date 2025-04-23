@@ -3,7 +3,7 @@ from flet import View, Page, AppBar, ElevatedButton, Text, FilePicker, FilePicke
 from flet import RouteChangeEvent, ViewPopEvent, CrossAxisAlignment, MainAxisAlignment
 import lex
 import sintax  # Importar el analizador sintáctico
-from gemini import gemini
+from gemini import compile, semantic
 
 def main(page: Page):
     page.title = "Java-Python Compiler"
@@ -34,6 +34,7 @@ def main(page: Page):
 
     executeButtonLex = ft.ElevatedButton(text="Analyze Lexically", disabled=True)
     executeButtonSyntax = ft.ElevatedButton(text="Analyze Syntactically", disabled=True)
+    executeButtonSemantic = ft.ElevatedButton(text="Analyze Semantically", disabled=True)
     executeButtonCompile = ft.ElevatedButton(text="Compile", disabled=True)
 
     # File picker for loading files
@@ -43,6 +44,7 @@ def main(page: Page):
     def validate(e: ft.ControlEvent) -> None:
         executeButtonLex.disabled = textArea1.value == ""
         executeButtonSyntax.disabled = textArea1.value == ""
+        executeButtonSemantic.disabled = textArea1.value == ""
         executeButtonCompile.disabled = textArea1.value == ""
         page.update()
 
@@ -75,10 +77,26 @@ def main(page: Page):
         page.update()
 
     def executeCompile(e: ft.ControlEvent) -> None:
-        result = gemini(textArea1.value)
+        result = compile(textArea1.value)
         resultTable.rows.clear()
         for line in result.split("\n"):
             if (line.strip() == ""):
+                continue
+            resultTable.rows.append(
+                ft.DataRow(cells=[
+                    ft.DataCell(Text(line)),  # Display the syntax analysis result
+                    ft.DataCell(Text("")),
+                    ft.DataCell(Text("")),
+                    ft.DataCell(Text("")),
+                ])
+            )
+        page.update()
+
+    def executeSemantic(e: ft.ControlEvent) -> None:
+        result = semantic(textArea1.value)
+        resultTable.rows.clear()
+        for line in result.split(";"):
+            if (line.strip() == "" or line.strip() == " " or line.strip() == "\n"):
                 continue
             resultTable.rows.append(
                 ft.DataRow(cells=[
@@ -113,6 +131,7 @@ def main(page: Page):
     executeButtonLex.on_click = executeLex
     executeButtonSyntax.on_click = executeSyntax
     executeButtonCompile.on_click = executeCompile
+    executeButtonSemantic.on_click = executeSemantic
 
     def route_change(e: RouteChangeEvent) -> None:
         page.views.clear()
@@ -127,6 +146,7 @@ def main(page: Page):
                             Text(value='Java-Python Compiler\nSamuel Molina and Angelo Polgrossi', size=30, text_align="CENTER"),
                             ElevatedButton(text='Lexical Analyzer', on_click=lambda _: page.go('/lex')),
                             ElevatedButton(text='Syntax Analyzer', on_click=lambda _: page.go('/syntax')),
+                            ElevatedButton(text='Semantic Analyzer', on_click=lambda _: page.go('/semantic')),
                             ElevatedButton(text='Compiler', on_click=lambda _: page.go('/compile')),
                         ],
                         expand=True,
@@ -185,6 +205,29 @@ def main(page: Page):
                         )
                     ],
                     scroll=ft.ScrollMode.ALWAYS  # Habilitar scroll en la página del analizador sintáctico
+                )
+            )
+
+        if page.route == '/semantic':
+            page.views.append(
+                View(
+                    route='/semantic',
+                    controls=[
+                        AppBar(title=Text('Semantic Analyzer'), bgcolor='blue'),
+                        ft.Column(
+                            controls=[
+                                Text(value='Semantic Analyzer', size=30),
+                                textArea1,
+                                loadFileButton,  # Botón para cargar archivos
+                                executeButtonSemantic,
+                                resultTableContainer,  # Tabla de resultados
+                            ],
+                            expand=True,
+                            spacing=10,
+                            horizontal_alignment=CrossAxisAlignment.CENTER,
+                        )
+                    ],
+                    scroll=ft.ScrollMode.ALWAYS  # Habilitar scroll en la página del compilador
                 )
             )
     
